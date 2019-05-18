@@ -9,5 +9,6 @@ namespace CRM.Repositories
         void DeleteIndividualClient(int id);
         IEnumerable<IndividualClient> ListOfIndividualClient();
         IndividualClient DetailsOfIndividualClient(int id);
+        IEnumerable<ClientType> ListOfClientTypes();
     }
 }

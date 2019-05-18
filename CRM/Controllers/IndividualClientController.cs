@@ -11,8 +11,10 @@ using System.Web.Http.Results;
 
 namespace CRM.Controllers
 {
+    [RoutePrefix("api/IndividualClient")]
     public class IndividualClientController : ApiController
     {
+        [Route("")]
         [HttpPost]
         public async Task<IHttpActionResult> AddIndividualClient([FromBody] IndividualClient individualClient)
         {
@@ -28,6 +30,7 @@ namespace CRM.Controllers
             }
         }
 
+        [Route("{id:int}")]
         [HttpDelete]
         public async Task<IHttpActionResult> DeleteIndividualClient(int id)
         {
@@ -43,6 +46,7 @@ namespace CRM.Controllers
             }
         }
 
+        [Route("")]
         [HttpGet]
         public HttpResponseMessage ListOfIndividualClient()
         {
@@ -60,7 +64,7 @@ namespace CRM.Controllers
             }
         }
 
-     
+        [Route("{id:int}")]
         [HttpGet]
         public HttpResponseMessage DetailsIndividualClient(int id)
         {
@@ -76,8 +80,9 @@ namespace CRM.Controllers
             }
         }
 
+        [Route("")]
         [HttpPut]
-        public HttpResponseMessage UpdateIndividualClient([FromBody] ChangeClient changedClient)
+        public HttpResponseMessage UpdateIndividualClient([FromBody] IndividualClient changedClient)
         {
             IndClientRepository _repo = new IndClientRepository();
             try
@@ -88,6 +93,24 @@ namespace CRM.Controllers
             catch (Exception ex)
             {
                 return Request.CreateResponse(HttpStatusCode.BadRequest);
+            }
+        }
+
+        [Route("Type")]
+        [HttpGet]
+        public HttpResponseMessage ListOfClientsTypes()
+        {
+            IndClientRepository _repo = new IndClientRepository();
+            try
+            {
+                IEnumerable<ClientType> list = _repo.ListOfClientTypes();
+                return Request.CreateResponse(HttpStatusCode.OK, list);
+
+            }
+            catch (Exception ex)
+            {
+                return Request.CreateResponse(HttpStatusCode.BadRequest);
+                //return StatusCode(HttpStatusCode.BadRequest);
             }
         }
     }

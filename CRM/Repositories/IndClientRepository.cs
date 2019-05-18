@@ -27,9 +27,12 @@ namespace CRM.Repositories
                 ,
                     IC_Street = individualClient.Street
                 ,
-                    IC_City = individualClient.Street
+                    IC_City = individualClient.City
                 ,
                     IC_PostalCode = individualClient.PostalCode
+                ,
+                    IC_TypeID = individualClient.TypeId
+
                 }, commandType: CommandType.StoredProcedure);
             }
 
@@ -40,7 +43,7 @@ namespace CRM.Repositories
             using (OracleConnection SQLConnect =
                  new OracleConnection(ConfigurationManager.ConnectionStrings["OracleConnectionString"].ConnectionString))
             {
-                SQLConnect.Execute("Delete_IndividualClient",
+                SQLConnect.Execute("System.Delete_IndividualClient",
                 new
                 {
                     IC_ID = id
@@ -62,6 +65,21 @@ namespace CRM.Repositories
             }
         }
 
+        public IEnumerable<ClientType> ListOfClientTypes()
+        {
+            using (OracleConnection SQLConnect =
+                 new OracleConnection(ConfigurationManager.ConnectionStrings["OracleConnectionString"].ConnectionString))
+            {
+                var p = new OracleDynamicParameters();
+                p.Add("p_types", dbType: OracleDbType.RefCursor, direction: ParameterDirection.Output);
+
+                var myRefcurs = SQLConnect.Query<ClientType>("System.ClientsTypes1", param : p,
+                    commandType: CommandType.StoredProcedure);
+
+                return myRefcurs;
+            }
+        }
+
         public IndividualClient DetailsOfIndividualClient(int id)
         {
             using (OracleConnection SQLConnect =
@@ -79,7 +97,7 @@ namespace CRM.Repositories
             }
         }
 
-        public void UpdateOfIndividualClient(ChangeClient changedClient)
+        public void UpdateOfIndividualClient(IndividualClient changedClient)
         {
             using (OracleConnection SQLConnect =
                  new OracleConnection(ConfigurationManager.ConnectionStrings["OracleConnectionString"].ConnectionString))
@@ -91,6 +109,7 @@ namespace CRM.Repositories
                 p.Add("p_street", dbType: OracleDbType.Varchar2, direction: ParameterDirection.Input, value: changedClient.Street);
                 p.Add("p_city", dbType: OracleDbType.Varchar2, direction: ParameterDirection.Input, value: changedClient.City);
                 p.Add("p_zip", dbType: OracleDbType.Varchar2, direction: ParameterDirection.Input, value: changedClient.PostalCode);
+                p.Add("p_type", dbType: OracleDbType.Int32, direction: ParameterDirection.Input, value: changedClient.TypeId);
                 
                 SQLConnect.Execute("System.ClientUpdate", param : p,
                     commandType: CommandType.StoredProcedure);
