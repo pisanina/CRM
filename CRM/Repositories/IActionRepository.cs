@@ -7,6 +7,6 @@ namespace CRM.Repositories
     {
         void AddAction(Action newAction);
         IEnumerable<Action> ListOfActions();
-        IEnumerable<Action> MessagesForClient(int clientId);
+        IEnumerable<MessageToClient> MessagesForClient(int clientId);
     }
 }

@@ -7,22 +7,22 @@ using System.Net.Http;
 using System.Threading.Tasks;
 using System.Web.Http;
 using System.Web.Http.Results;
-using Action = CRM.Models.Action;
-using System.Linq;
+using Product = CRM.Models.Product;
+using ProductCategory = CRM.Models.ProductCategory;
 
 namespace CRM.Controllers
 {
-    [RoutePrefix("api/Action")]
-    public class ActionController : ApiController
+    [RoutePrefix("api/Product")]
+    public class ProductController : ApiController
     {
         [Route("")]
         [HttpPost]
-        public async Task<IHttpActionResult> AddAction([FromBody] Action newAction)
+        public async Task<IHttpActionResult> AddProduct([FromBody] Product newProduct)
         {
-            ActionRepository _repo = new ActionRepository();
+            ProductRepository _repo = new ProductRepository();
             try
             {
-                _repo.AddAction(newAction);
+                _repo.AddProduct(newProduct);
                 return StatusCode(HttpStatusCode.Created);
             }
             catch (Exception ex)
@@ -31,15 +31,15 @@ namespace CRM.Controllers
             }
         }
 
+
         [Route("")]
         [HttpGet]
-        public HttpResponseMessage ListOfActions()
+        public HttpResponseMessage ListOfProducts()
         {
-            ActionRepository _repo = new ActionRepository();
+            ProductRepository _repo = new ProductRepository();
             try
             {
-                IEnumerable<Action> list = _repo.ListOfActions();
-                
+                IEnumerable<Product> list = _repo.ListOfProducts();
                 return Request.CreateResponse(HttpStatusCode.OK, list);
 
             }
@@ -50,22 +50,22 @@ namespace CRM.Controllers
             }
         }
 
-        [Route("{id:int}")]
+        [Route("Category")]
         [HttpGet]
-        public HttpResponseMessage MessagesForClient(int id)
+        public HttpResponseMessage ListOfProductsCategories()
         {
-            IActionRepository _repo = new ActionRepository();
+            ProductRepository _repo = new ProductRepository();
             try
             {
-                IEnumerable<MessageToClient> messages = _repo.MessagesForClient(id);
-               // var Cos = messages.Select(a => a.MessageDate.ToString("dd/MM/yyyy"));
-                return Request.CreateResponse(HttpStatusCode.OK, messages);
+                IEnumerable<ProductCategory> list = _repo.ListOfProductsCategories();
+                return Request.CreateResponse(HttpStatusCode.OK, list);
+
             }
             catch (Exception ex)
             {
                 return Request.CreateResponse(HttpStatusCode.BadRequest);
+                //return StatusCode(HttpStatusCode.BadRequest);
             }
         }
-
     }
 }

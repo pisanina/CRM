@@ -1,4 +1,6 @@
-﻿namespace CRM.Models
+﻿using System.Collections.Generic;
+
+namespace CRM.Models
 {
     public class IndividualClient
     {
@@ -9,5 +11,6 @@
         public string City { get; set; }
         public string PostalCode { get; set; }
         public int TypeId { get; set; }
+        public int[] Industries { get; set; }
     }
 }

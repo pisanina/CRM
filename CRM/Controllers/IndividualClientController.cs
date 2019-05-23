@@ -113,5 +113,39 @@ namespace CRM.Controllers
                 //return StatusCode(HttpStatusCode.BadRequest);
             }
         }
+
+        [Route("Industry")]
+        [HttpGet]
+        public HttpResponseMessage ListIndustries()
+        {
+            IndustryRepository _repo = new IndustryRepository();
+            try
+            {
+                IEnumerable<Industry> list = _repo.ListOfIndustries();
+                return Request.CreateResponse(HttpStatusCode.OK, list);
+
+            }
+            catch (Exception ex)
+            {
+                return Request.CreateResponse(HttpStatusCode.BadRequest);
+                //return StatusCode(HttpStatusCode.BadRequest);
+            }
+        }
+
+        [Route("Industry/{id:int}")]
+        [HttpGet]
+        public HttpResponseMessage IndustryOfClient(int id)
+        {
+            IndustryRepository _repo = new IndustryRepository();
+            try
+            {
+                IEnumerable<int> list = _repo.IndustriesOfClient(id);
+                return Request.CreateResponse(HttpStatusCode.OK, list);
+            }
+            catch (Exception ex)
+            {
+                return Request.CreateResponse(HttpStatusCode.BadRequest);
+            }
+        }
     }
 }

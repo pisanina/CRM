@@ -15,25 +15,42 @@ namespace CRM.Repositories
         {
 
             using (OracleConnection SQLConnect =
-         new OracleConnection(ConfigurationManager.ConnectionStrings["OracleConnectionString"].ConnectionString))
+                new OracleConnection(ConfigurationManager.ConnectionStrings["OracleConnectionString"].ConnectionString))
             {
+                  var name=new OracleParameter("IC_Name",OracleDbType.Varchar2,
+                      individualClient.Name, ParameterDirection.Input);
+                  var email=new OracleParameter("IC_EMail",OracleDbType.Varchar2,
+                      individualClient.EMail, ParameterDirection.Input);
+                  var street=new OracleParameter("IC_Street",OracleDbType.Varchar2,
+                      individualClient.Street, ParameterDirection.Input);
+                  var city=new OracleParameter("IC_City",OracleDbType.Varchar2,
+                      individualClient.City, ParameterDirection.Input);
+                  var postalCode=new OracleParameter("IC_PostalCode",OracleDbType.Varchar2,
+                      individualClient.PostalCode, ParameterDirection.Input);
+                  var typeid=new OracleParameter("IC_TypeID",OracleDbType.Int32,
+                      individualClient.TypeId, ParameterDirection.Input);
 
-                SQLConnect.Execute("Add_IndividualClient",
-                new
-                {
-                    IC_Name = individualClient.Name
-                ,
-                    IC_EMail = individualClient.EMail
-                ,
-                    IC_Street = individualClient.Street
-                ,
-                    IC_City = individualClient.City
-                ,
-                    IC_PostalCode = individualClient.PostalCode
-                ,
-                    IC_TypeID = individualClient.TypeId
+                  var industryIds = new OracleParameter("CI_IndustryIds",OracleDbType.Int32,
+                      individualClient.Industries, ParameterDirection.Input);
+                industryIds.CollectionType = OracleCollectionType.PLSQLAssociativeArray;
+                industryIds.Size = individualClient.Industries.Length;
 
-                }, commandType: CommandType.StoredProcedure);
+                
+                SQLConnect.Open();
+
+
+                var com=SQLConnect.CreateCommand();
+                com.CommandText = "CRM_Package.Add_IndividualClient";
+                com.CommandType = CommandType.StoredProcedure;
+                com.Parameters.Add(name);
+                com.Parameters.Add(email);
+                com.Parameters.Add(street);
+                com.Parameters.Add(city);
+                com.Parameters.Add(postalCode);
+                com.Parameters.Add(typeid);
+                com.Parameters.Add(industryIds);
+
+                com.ExecuteNonQuery();
             }
 
         }
@@ -100,19 +117,45 @@ namespace CRM.Repositories
         public void UpdateOfIndividualClient(IndividualClient changedClient)
         {
             using (OracleConnection SQLConnect =
-                 new OracleConnection(ConfigurationManager.ConnectionStrings["OracleConnectionString"].ConnectionString))
+               new OracleConnection(ConfigurationManager.ConnectionStrings["OracleConnectionString"].ConnectionString))
             {
-                var p = new OracleDynamicParameters();
-                p.Add("p_id", dbType: OracleDbType.Varchar2, direction: ParameterDirection.Input, value: changedClient.ID);
-                p.Add("p_name", dbType: OracleDbType.Varchar2, direction: ParameterDirection.Input, value: changedClient.Name);
-                p.Add("p_email", dbType: OracleDbType.Varchar2, direction: ParameterDirection.Input, value: changedClient.EMail);
-                p.Add("p_street", dbType: OracleDbType.Varchar2, direction: ParameterDirection.Input, value: changedClient.Street);
-                p.Add("p_city", dbType: OracleDbType.Varchar2, direction: ParameterDirection.Input, value: changedClient.City);
-                p.Add("p_zip", dbType: OracleDbType.Varchar2, direction: ParameterDirection.Input, value: changedClient.PostalCode);
-                p.Add("p_type", dbType: OracleDbType.Int32, direction: ParameterDirection.Input, value: changedClient.TypeId);
-                
-                SQLConnect.Execute("System.ClientUpdate", param : p,
-                    commandType: CommandType.StoredProcedure);
+                var id=new OracleParameter("p_id",OracleDbType.Int32,
+                      changedClient.ID, ParameterDirection.Input);
+                var name=new OracleParameter("p_name",OracleDbType.Varchar2,
+                      changedClient.Name, ParameterDirection.Input);
+                var email=new OracleParameter("p_email",OracleDbType.Varchar2,
+                      changedClient.EMail, ParameterDirection.Input);
+                var street=new OracleParameter("p_street",OracleDbType.Varchar2,
+                      changedClient.Street, ParameterDirection.Input);
+                var city=new OracleParameter("p_city",OracleDbType.Varchar2,
+                      changedClient.City, ParameterDirection.Input);
+                var zip=new OracleParameter("p_zip",OracleDbType.Varchar2,
+                      changedClient.PostalCode, ParameterDirection.Input);
+                var type=new OracleParameter("p_type",OracleDbType.Int32,
+                      changedClient.TypeId, ParameterDirection.Input);
+
+                var industryIds = new OracleParameter("p_IndustryIds",OracleDbType.Int32,
+                      changedClient.Industries, ParameterDirection.Input);
+                industryIds.CollectionType = OracleCollectionType.PLSQLAssociativeArray;
+                industryIds.Size = changedClient.Industries.Length;
+
+
+                SQLConnect.Open();
+
+
+                var com=SQLConnect.CreateCommand();
+                com.CommandText = "CRM_Package.Edit_IndividualClient2";
+                com.CommandType = CommandType.StoredProcedure;
+                com.Parameters.Add(id);
+                com.Parameters.Add(name);
+                com.Parameters.Add(email);
+                com.Parameters.Add(street);
+                com.Parameters.Add(city);
+                com.Parameters.Add(zip);
+                com.Parameters.Add(type);
+                com.Parameters.Add(industryIds);
+
+                com.ExecuteNonQuery();
             }
         }
     }

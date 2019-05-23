@@ -46,7 +46,7 @@ namespace CRM.Repositories
             }
         }
 
-        public IEnumerable<Action> MessagesForClient(int clientId)
+        public IEnumerable<MessageToClient> MessagesForClient(int clientId)
         {
             using (OracleConnection SQLConnect =
                  new OracleConnection(ConfigurationManager.ConnectionStrings["OracleConnectionString"].ConnectionString))
@@ -57,7 +57,7 @@ namespace CRM.Repositories
                 p.Add("p_messages", dbType: OracleDbType.RefCursor, direction: ParameterDirection.Output);
 
 
-                var myRefcurs = SQLConnect.Query<Action>("System.MessagesListClient", param : p,
+                var myRefcurs = SQLConnect.Query<MessageToClient>("System.MessagesListClient", param : p,
                     commandType: CommandType.StoredProcedure);
                 return myRefcurs;
             }
