@@ -68,12 +68,14 @@ namespace CRM.Repositories
             }
         }
 
-        public IEnumerable<IndividualClient> ListOfIndividualClient()
+        public IEnumerable<IndividualClient> ListOfIndividualClient(string toSearch, int? typeId)
         {
             using (OracleConnection SQLConnect =
                  new OracleConnection(ConfigurationManager.ConnectionStrings["OracleConnectionString"].ConnectionString))
             {
                 var p = new OracleDynamicParameters();
+                p.Add("p_tosearch", dbType: OracleDbType.Varchar2, direction: ParameterDirection.Input, value: toSearch);
+                p.Add("p_type", dbType: OracleDbType.Int32, direction: ParameterDirection.Input, value: typeId);
                 p.Add("p_clients", dbType: OracleDbType.RefCursor, direction: ParameterDirection.Output);
 
                 var myRefcurs = SQLConnect.Query<IndividualClient>("System.ClientsList", param : p, 

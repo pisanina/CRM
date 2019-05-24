@@ -12,6 +12,7 @@ DROP TABLE System.IC_IndividualClient;
 ALTER TABLE System.IC_IndividualClient ADD TypeId NUMBER(1,0);
 ALTER TABLE System.IC_IndividualClient ADD CONSTRAINT IC_email_unique UNIQUE (EMail);
 ALTER TABLE System.IC_IndividualClient ADD FOREIGN KEY (TypeId) REFERENCES System.IC_ClientType(ID);
+
 INSERT
 INTO System.IC_IndividualClient
   (
@@ -59,6 +60,12 @@ IS
       p_IndustryIds IN CRM_Package.Industry_Array 
     )
     ;
+  PROCEDURE  ClientsList (
+      p_tosearch IN Varchar2,
+      p_type IN INTEGER,
+      CI_IndustryIds IN CRM_Package.Industry_Array,
+      p_clients OUT SYS_REFCURSOR) ;
+      
 END CRM_Package;
 /
 
@@ -148,6 +155,25 @@ AS
       );
     END;
     
+PROCEDURE  System.ClientsList (
+    p_tosearch IN Varchar2,
+    p_type IN INTEGER,
+    CI_IndustryIds IN CRM_Package.Industry_Array,
+    p_clients OUT SYS_REFCURSOR)  
+    IS  
+    BEGIN  
+    OPEN p_clients for Select * from System.IC_IndividualClient
+    --Join  System.CI_ClientIndustry ON  System.ClientsList = System.CI_ClientIndustry(ClientId)
+    
+    where (UPPER(Name) LIKE UPPER('%'||p_tosearch||'%') 
+    OR UPPER(EMail) LIKE UPPER('%'||p_tosearch||'%')
+    OR UPPER(Street) LIKE UPPER('%'||p_tosearch||'%')
+    OR UPPER(City) LIKE UPPER('%'||p_tosearch||'%'))
+    AND (p_type IS Null OR TypeId = p_type)
+    
+    ORDER BY Name;  
+END;
+    
 END CRM_Package;
 /
 
@@ -160,6 +186,23 @@ BEGIN
   CRM_Package.Add_IndividualClient ('kz2','kz2','kz','kz','kz',1,ids) ;
 END;
 /
+
+
+
+
+VARIABLE mycursor refcursor;
+VARIABLE tosearch Varchar2;
+VARIABLE ptype INTEGER;
+EXEC :tosearch :='a';
+EXEC :ptype :=null;
+--PRINT :tosearch
+--PRINT :ptype
+EXECUTE ClientsList (:tosearch, :ptype, :mycursor);
+PRINT mycursor;
+
+
+ Select * from System.IC_IndividualClient;
+ Select * from System.IC_IndividualClient  where UPPER(Name) LIKE UPPER('%a%');
 -------------------------------------------------------------------------------------------------
 SELECT *
 FROM CI_CLIENTINDUSTRY;
@@ -172,6 +215,7 @@ IS
 BEGIN
   OPEN p_clients FOR SELECT * FROM System.IC_IndividualClient ORDER BY Name;
 END;
+
 CREATE OR REPLACE PROCEDURE System.ClientDetails(
     p_clientID IN NUMBER,
     p_client OUT SYS_REFCURSOR)
@@ -184,10 +228,12 @@ VARIABLE id NUMBER :=1;
 SELECT *
 FROM System.IC_IndividualClient
 WHERE ID= :id VARIABLE mycursor refcursor;
+
 VARIABLE id NUMBER;
 EXEC :id :=1;
 EXECUTE System.ClientDetails (:id, :mycursor);
 PRINT mycursor;
+
 VARIABLE mycursor refcursor;
 EXECUTE System.ClientsList ( :mycursor );
 PRINT mycursor;
@@ -445,21 +491,34 @@ CREATE OR REPLACE PROCEDURE SYSTEM.Add_Product(
       );
   END;
 EXECUTE SYSTEM.Add_Product ('bucket', 1, 25, 75);
+
+
+
+
+
 CREATE OR REPLACE PROCEDURE System.ProductsList
     (
+      p_toSearch IN Varchar2,
+      p_category IN Number,
       p_products OUT SYS_REFCURSOR
     )
   IS
   BEGIN
-    OPEN p_products FOR SELECT System.IC_ProductCategory.Name
-  AS
+    OPEN p_products FOR SELECT System.IC_ProductCategory.Name AS
     CategoryName,
     System.IC_Product.ID,
     System.IC_Product.Name,
-    Category,
-    Price,
-    Quantity FROM System.IC_Product Inner Join System.IC_ProductCategory ON System.IC_Product.Category = System.IC_ProductCategory.ID ORDER BY Name;
+    Category, Price, Quantity 
+    FROM System.IC_Product Inner Join System.IC_ProductCategory ON System.IC_Product.Category = System.IC_ProductCategory.ID
+     where (UPPER( System.IC_Product.Name) LIKE UPPER('%'||p_toSearch||'%') )
+     AND Category = p_category
+    ORDER BY Name;
   END;
+  
+  
+  
+  
+  
   
 VARIABLE mycursor refcursor;
 EXECUTE System.ProductsList ( :mycursor );

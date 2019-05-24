@@ -31,15 +31,14 @@ namespace CRM.Controllers
             }
         }
 
-
         [Route("")]
         [HttpGet]
-        public HttpResponseMessage ListOfProducts()
+        public HttpResponseMessage ListOfProducts(string toSearch, int? categoryId)
         {
             ProductRepository _repo = new ProductRepository();
             try
             {
-                IEnumerable<Product> list = _repo.ListOfProducts();
+                IEnumerable<Product> list = _repo.ListOfProducts(toSearch, categoryId);
                 return Request.CreateResponse(HttpStatusCode.OK, list);
 
             }
@@ -48,6 +47,13 @@ namespace CRM.Controllers
                 return Request.CreateResponse(HttpStatusCode.BadRequest);
                 //return StatusCode(HttpStatusCode.BadRequest);
             }
+        }
+
+        [Route("")]
+        [HttpGet]
+        public HttpResponseMessage ListOfProducts()
+        {
+            return ListOfProducts(null, null);
         }
 
         [Route("Category")]

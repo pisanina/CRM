@@ -24,13 +24,15 @@ namespace CRM.Repositories
             }
         }
 
-        public IEnumerable<Product> ListOfProducts()
+        public IEnumerable<Product> ListOfProducts(string toSearch, int? categoryId)
         {
             using (OracleConnection SQLConnect =
                  new OracleConnection(ConfigurationManager.ConnectionStrings["OracleConnectionString"].ConnectionString))
             {
                 var p = new OracleDynamicParameters();
                 p.Add("p_products", dbType: OracleDbType.RefCursor, direction: ParameterDirection.Output);
+                p.Add("p_toSearch", dbType: OracleDbType.NVarchar2, direction: ParameterDirection.Input, value : toSearch);
+                p.Add("p_category", dbType: OracleDbType.Int32, direction: ParameterDirection.Input, value : categoryId);
 
                 var myRefcurs = SQLConnect.Query<Product>("System.ProductsList", param : p,
                     commandType: CommandType.StoredProcedure);

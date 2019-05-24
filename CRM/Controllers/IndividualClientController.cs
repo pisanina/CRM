@@ -48,12 +48,12 @@ namespace CRM.Controllers
 
         [Route("")]
         [HttpGet]
-        public HttpResponseMessage ListOfIndividualClient()
+        public HttpResponseMessage ListOfIndividualClient(string toSearch, int? typeId)
         {
             IndClientRepository _repo = new IndClientRepository();
             try
             {
-                IEnumerable<IndividualClient> list = _repo.ListOfIndividualClient();
+                IEnumerable<IndividualClient> list = _repo.ListOfIndividualClient(toSearch, typeId);
                 return Request.CreateResponse(HttpStatusCode.OK, list);
 
             }
@@ -62,6 +62,13 @@ namespace CRM.Controllers
                 return Request.CreateResponse(HttpStatusCode.BadRequest);
                 //return StatusCode(HttpStatusCode.BadRequest);
             }
+        }
+
+        [Route("")]
+        [HttpGet]
+        public HttpResponseMessage ListOfIndividualClient()
+        {
+           return ListOfIndividualClient(null, null);
         }
 
         [Route("{id:int}")]

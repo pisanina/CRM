@@ -7,7 +7,7 @@ namespace CRM.Repositories
     {
         void AddIndividualClient(IndividualClient individualClient);
         void DeleteIndividualClient(int id);
-        IEnumerable<IndividualClient> ListOfIndividualClient();
+        IEnumerable<IndividualClient> ListOfIndividualClient(string toSearch, int? typeId);
         IndividualClient DetailsOfIndividualClient(int id);
         IEnumerable<ClientType> ListOfClientTypes();
     }
